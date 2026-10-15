@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  name      String
+  pinHash   String
+  createdAt DateTime @default(now())
+}
+
+model Employee {
+  id         String   @id @default(cuid())
+  name       String
+  phone      String?
+  hourlyWage Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  attendanceRecords AttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id         String    @id @default(cuid())
+  employeeId String
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date       String
+  clockIn    DateTime?
+  clockOut   DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([employeeId, date])
+}
